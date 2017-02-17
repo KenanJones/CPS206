@@ -2,6 +2,7 @@ package edu.jalc.inclass.cocacola.recipe.store;
 
 import edu.jalc.inclass.cocacola.security.PinNumber;
 import edu.jalc.inclass.cocacola.recipe.Recipe;
+import edu.jalc.inclass.cocacola.employee.Employee;
 import java.util.HashMap;
 
 /*
@@ -17,16 +18,32 @@ import java.util.HashMap;
 public class SecretRecipeStore {
 
   private static SecretRecipeStore secretRecipeStore;
-  private HashMap<PinNumber,Recipe> secretRecipies;
+  private HashMap<Recipe,PinNumber> secretRecipies;
 
-  private SecretRecipeStore(){}
+  private SecretRecipeStore(){
+    secretRecipies = new HashMap();
+  }
 
   public static SecretRecipeStore getInstance(){
     if(secretRecipeStore == null) secretRecipeStore = new SecretRecipeStore();
     return secretRecipeStore;
   }
 
-  //public getRecipe(){
+  public void addRecipe(Employee employee, Recipe recipe){
+    secretRecipies.put(recipe, employee.getPinNumber());
+  }
 
-  //}
+  public Recipe getRecipe(String name, Employee employee)throws Exception{
+    Recipe foundRecipe = null;
+    for(Recipe recipe: secretRecipies.keySet()){
+      if(recipe.getName().equals(name)){
+        foundRecipe = recipe;
+      }
+    }
+    if(foundRecipe == null) throw new Exception("Recipe not found");
+    if(secretRecipies.get(foundRecipe) != employee.getPinNumber()){
+      throw new Exception("pinNumbers do not match");
+    }
+    return foundRecipe;
+  }
 }
